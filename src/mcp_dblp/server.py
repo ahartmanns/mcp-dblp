@@ -385,17 +385,19 @@ def create_server(backend) -> Server:
                 description=(
                     "Write all collected BibTeX entries to a .bib file and empty the collection. "
                     "Returns the number of entries and the file path. Entries for papers that are "
-                    "not in DBLP have to be added to the file afterwards."
+                    "not in DBLP have to be added to the file afterwards. Without a path, the "
+                    "entries are returned as text instead of written to a file (e.g. to compare "
+                    "them with an existing .bib file); the collection is emptied as well."
                 ),
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "path": {
                             "type": "string",
-                            "description": "Absolute path for the .bib file (e.g., '/path/to/refs.bib'); a leading ~ is expanded, relative paths are rejected. The .bib extension is added automatically if missing. Parent directories are created if needed.",
+                            "description": "Absolute path for the .bib file (e.g., '/path/to/refs.bib'); a leading ~ is expanded, relative paths are rejected. The .bib extension is added automatically if missing. Parent directories are created if needed. Omit it to get the entries as text.",
                         },
                     },
-                    "required": ["path"],
+                    "required": [],
                 },
             ),
         ]
@@ -678,10 +680,14 @@ def create_server(backend) -> Server:
 
                     path = arguments.get("path")
                     if not path:
+                        # No file: return the entries as text, e.g. to compare them with an
+                        # existing .bib file
+                        count = len(bibtex_buffer)
+                        text = "".join(entry + "\n\n" for entry in bibtex_buffer.values())
+                        bibtex_buffer.clear()
                         return [
                             types.TextContent(
-                                type="text",
-                                text="Error: Missing required parameter 'path'",
+                                type="text", text=f"{count} references:\n\n{text.rstrip()}\n"
                             )
                         ]
 

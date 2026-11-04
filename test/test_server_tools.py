@@ -73,6 +73,21 @@ async def test_export_requires_absolute_path(mode, session_backend, tmp_path, mo
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("mode", MODES)
+async def test_export_without_path_returns_text(mode, session_backend):
+    async with Client(create_server(session_backend), mode=mode) as c:
+        for key, cite in [("journals/tcs/GodelS20", "g"), ("conf/sat/KirchwegerS21", "k")]:
+            await c.call_tool("add_bibtex_entry", {"dblp_key": key, "citation_key": cite})
+        r = await c.call_tool("export_bibtex", {})
+        text = _text(r)
+        assert text.startswith("2 references:\n\n@")
+        assert "{g," in text and "{k," in text
+        # the collection is emptied, as after an export to a file
+        r = await c.call_tool("export_bibtex", {})
+        assert "Collection is empty" in _text(r)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("mode", MODES)
 async def test_export_expands_home(mode, session_backend, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
     async with Client(create_server(session_backend), mode=mode) as c:
