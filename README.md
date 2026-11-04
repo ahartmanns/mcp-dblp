@@ -213,17 +213,18 @@ The server renders every entry from DBLP's data; the model chooses only the cita
 
 ### export_bibtex
 
-Export all collected BibTeX entries to a .bib file.
+Export all collected BibTeX entries to a .bib file, or return them as text.
 
 **Parameters:**
 
-- `path` (string, required): Absolute path for the .bib file (e.g., "/path/to/refs.bib"); a leading `~` is expanded. Relative paths are rejected. When the server runs in WSL, Windows paths (`C:\...`, `\\wsl.localhost\...`) are accepted and converted with `wslpath`, so that clients on Windows can start the server in WSL.
+- `path` (string, optional): Absolute path for the .bib file (e.g., "/path/to/refs.bib"); a leading `~` is expanded. Relative paths are rejected. When the server runs in WSL, Windows paths (`C:\...`, `\\wsl.localhost\...`) are accepted and converted with `wslpath`, so that clients on Windows can start the server in WSL. Without a path, the entries are returned as text.
 
 **Behavior:**
 
 - Saves all entries added via `add_bibtex_entry` to the specified path
 - The .bib extension is added automatically if missing
 - Parent directories are created if needed
+- Without a path, returns the entries as text instead, e.g. to compare them with an existing .bib file
 - Clears the collection after successful export
 - Returns the full path to the saved file
 - Returns an error if the collection is empty

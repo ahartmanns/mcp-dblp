@@ -63,4 +63,5 @@ After 3 or more different searches, mark the citation as [CITATION NOT FOUND] an
 - Copy `dblp_key` exactly from the results; a failing add usually means a mistyped key.
 - Citation keys must be unique (e.g., `Szeider09`, `Vaswani2017`).
 - Always produce the .bib file with `export_bibtex`, not by writing it yourself.
+- `export_bibtex` without a `path` returns the entries as text: use it to check or compare entries, for example those of an existing .bib file, not to write a .bib file yourself.
 - `export_bibtex` empties the collection; add entries for papers outside DBLP to the file afterwards.
